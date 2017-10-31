@@ -1,0 +1,42 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.tasklist ul {
+    list-style: none;
+}
+
+.tasklist li form {
+    display: inline-block;
+    /*float: right;*/
+}
+
+.nav ul {
+    list-style: none;
+}
+
+.nav li {
+    display: inline-block;
+    /*float: right;*/
+}
+
+.nav a {
+    text-decoration: none;
+}
+
+.add_form ul {
+    list-style: none;
+}
+
+.add_form li {
+    display: inline-block;
+}
+
+.tasklist a {
+    text-decoration: none;
+}

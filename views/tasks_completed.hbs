@@ -1,0 +1,14 @@
+<div class="tasklist">
+    <ul>
+        {{#each tasks}}
+            <li><a href="task/{{this._id}}">{{this.text}}</a>
+                <!--<form action="/delete" method="POST" class="done_form">-->
+                    <!--<input type="hidden" name="_id" value="{{this._id}}">-->
+                    <!--<input class="done_button" type="submit" name="delete" value="Delete">-->
+                <!--</form>-->
+            </li>
+        {{else}}
+            <p>No tasks have been completed!</p>
+        {{/each}}
+    </ul>
+</div>
