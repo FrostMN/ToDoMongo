@@ -1,25 +1,22 @@
 var express = require('express');
 var router = express.Router();
-var ObjectID = require('mongodb').ObjectID;
+var Task = require('../models/task.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
-    req.tasks.find( {completed:false} ).toArray().then( (docs) => {
-        res.render('index', { title: 'Incomplete Tasks', tasks: docs });
-    }).catch( (err) => {
+    Task.find( {completed: false})
+        .then( (docs) => {
+            res.render('index', { title: 'Incomplete Tasks', tasks: docs });
+        })
+    .catch( (err) => {
         next(err);
     });
 });
 
 router.get('/task/:_id', function(req, res, next) {
     var _id = req.params._id;
-    if (!ObjectID.isValid(_id)) {
-        var notFound = Error('Not Found');
-        notFound.status = 404;
-        next(notFound);
-    } else {
-        req.tasks.findOne({_id: ObjectID(_id)}).then((doc) => {
+    Task.findOne( {_id: ObjectID(_id)} )
+        .then( (doc) => {
             if (doc === null) {
                 var notFound = Error('Not Found');
                 notFound.status = 404;
@@ -28,14 +25,31 @@ router.get('/task/:_id', function(req, res, next) {
                 res.render('task', {title: 'Task', task: doc})
             }
         })
+
+    // if (!ObjectID.isValid(_id)) {
+    //     var notFound = Error('Not Found');
+    //     notFound.status = 404;
+    //     next(notFound);
+    // } else {
+    //     req.tasks.findOne({_id: ObjectID(_id)}).then((doc) => {
+    //         if (doc === null) {
+    //             var notFound = Error('Not Found');
+    //             notFound.status = 404;
+    //             next(notFound);
+    //         } else {
+    //             res.render('task', {title: 'Task', task: doc})
+    //         }
+    //     })
             .catch((err) => {
                 next(err);
             })
-    }
+    // }
 });
 
 
 router.get('/completed', function(req, res, next) {
+
+    Task.find( {completed: true} )
 
     req.tasks.find( {completed:true} ).toArray().then( (docs) => {
         res.render('tasks_completed', { title: 'Completed Tasks', tasks: docs });

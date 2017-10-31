@@ -6,7 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var session = require('express-session');
-var hbs = require('hbs')
+var mongoose = require('mongoose');
+var hbs = require('hbs');
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -17,6 +18,15 @@ var app = express();
 var db_url = process.env.MONGO_URL;
 
 // console.log(db_url);
+
+//
+// mongoose.connect(db_url, {useMongoClient: true})
+//     .then( () => { console.log('Connected to MongoDB') })
+//     .catch( (err) => {console.log('Error connecting to MongoDb')});
+
+mongoose.connect(db_url, {useMongoClient: true});
+mongoose.promise = global.Promise;
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,30 +44,30 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'top secret', resave: false, saveUninitialized: false}));
 app.use(flash());
 
-MongoClient.connect(db_url).then( (db) => {
+// MongoClient.connect(db_url).then( (db) => {
 
     // console.log(db);
 
-    var tasks = db.collection('tasks');
+// var tasks = db.collection('tasks');
     // console.log(tasks);
     // console.log(tasks.find());
 
-    app.use('/', function(req, res, next) {
-        req.tasks = tasks;
-        next();
-    });
+    // app.use('/', function(req, res, next) {
+    //     req.tasks = tasks;
+    //     next();
+    // });
 
-    app.use('/', index);
+app.use('/', index);
 
 // catch 404 and forward to error handler
-    app.use(function (req, res, next) {
+app.use(function (req, res, next) {
         var err = new Error('Not Found');
         err.status = 404;
         next(err);
     });
 
 // error handler
-    app.use(function (err, req, res, next) {
+app.use(function (err, req, res, next) {
         // set locals, only providing error in development
         res.locals.message = err.message;
         res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -67,9 +77,10 @@ MongoClient.connect(db_url).then( (db) => {
         res.render('error');
     });
 
-}).catch((err) => {
-    console.log('Error connecting to MongoDB\n', err);
-    process.exit(-1);
-});
+//
+// }).catch((err) => {
+//     console.log('Error connecting to MongoDB\n', err);
+//     process.exit(-1);
+// });
 
 module.exports = app;
