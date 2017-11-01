@@ -24,7 +24,9 @@ var db_url = process.env.MONGO_URL;
 //     .then( () => { console.log('Connected to MongoDB') })
 //     .catch( (err) => {console.log('Error connecting to MongoDb')});
 
-mongoose.connect(db_url, {useMongoClient: true});
+mongoose.connect(db_url, {useMongoClient: true})
+    .then( () => {console.log("Connected to MongoDB")})
+    .catch( (err) => { console.log("Error connecting to MongoDB", err); });
 mongoose.promise = global.Promise;
 
 
