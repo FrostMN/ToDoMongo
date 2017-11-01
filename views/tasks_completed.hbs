@@ -1,7 +1,18 @@
+{{#if tasks}}
+    <li>
+        <div class="deleteDone">
+            <form id="deleteDone_form" action="/deleteDone" method="POST">
+                <input id="deleteDone_button" name="deleteDone" type="submit" value="Delete All Done">
+            </form>
+        </div>
+    </li>
+{{/if}}
+
+
 <div class="tasklist">
     <ul>
         {{#each tasks}}
-            <li><a href="task/{{this._id}}">{{this.text}}</a>
+            <li><a href="task/{{this._id}}">{{this.text}}</a> Created: {{this.dateCreated}} | Completed: {{this.dateCompleted}}
                 <!--<form action="/delete" method="POST" class="done_form">-->
                     <!--<input type="hidden" name="_id" value="{{this._id}}">-->
                     <!--<input class="done_button" type="submit" name="delete" value="Delete">-->

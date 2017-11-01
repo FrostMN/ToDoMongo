@@ -45,7 +45,8 @@ router.post('/add', function (req, res, next) {
         req.flash('error', 'please enter a task');
         res.redirect('/'); // TODO be user friendly
     } else {
-        new Task({ text: req.body.text, completed: false}).save()
+        var d = new Date();
+        new Task({ text: req.body.text, completed: false, dateCreated: d}).save()
             .then( (newTask) => {
                 console.log('new task created is', newTask);
                 res.redirect('/');
@@ -59,7 +60,8 @@ router.post('/add', function (req, res, next) {
 
 router.post('/done', function (req, res, next) {
     var _id = req.body._id;
-    Task.findOneAndUpdate( {_id: _id}, {$set: {completed: true}})
+    var d = new Date();
+    Task.findOneAndUpdate( {_id: _id}, {$set: {completed: true, dateCompleted: d}})
         .then( (updtedTask) => {
             if (updtedTask) {
                 res.redirect('/');
@@ -94,9 +96,22 @@ router.post('/delete', function (req, res, next) {
             }
         })
         .catch((err) => {
-            next(err);
-        }
-    );
+                next(err);
+            }
+        );
+});
+
+router.post('/deleteDone', function (req, res, next) {
+    var _id = req.body._id;
+    Task.deleteMany( {completed: true})
+        .then( (result) =>{
+            req.flash('info', 'All Completed Tasks Deleted');
+            res.redirect('/');
+        })
+        .catch((err) => {
+                next(err);
+            }
+        );
 });
 
 module.exports = router;
