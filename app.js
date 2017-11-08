@@ -17,17 +17,10 @@ var app = express();
 
 var db_url = process.env.MONGO_URL;
 
-// console.log(db_url);
-
-//
-// mongoose.connect(db_url, {useMongoClient: true})
-//     .then( () => { console.log('Connected to MongoDB') })
-//     .catch( (err) => {console.log('Error connecting to MongoDb')});
-
 mongoose.connect(db_url, {useMongoClient: true})
     .then( () => {console.log("Connected to MongoDB")})
     .catch( (err) => { console.log("Error connecting to MongoDB", err); });
-mongoose.promise = global.Promise;
+mongoose.Promise = global.Promise;
 
 
 // view engine setup
@@ -46,18 +39,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'top secret', resave: false, saveUninitialized: false}));
 app.use(flash());
 
-// MongoClient.connect(db_url).then( (db) => {
-
-    // console.log(db);
-
-// var tasks = db.collection('tasks');
-    // console.log(tasks);
-    // console.log(tasks.find());
-
-    // app.use('/', function(req, res, next) {
-    //     req.tasks = tasks;
-    //     next();
-    // });
 
 app.use('/', index);
 
@@ -79,10 +60,5 @@ app.use(function (err, req, res, next) {
         res.render('error');
     });
 
-//
-// }).catch((err) => {
-//     console.log('Error connecting to MongoDB\n', err);
-//     process.exit(-1);
-// });
 
 module.exports = app;
