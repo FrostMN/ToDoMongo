@@ -77,7 +77,8 @@ router.post('/done', function (req, res, next) {
 });
 
 router.post('/alldone', function (req, res, next) {
-    Task.updateMany( { completed: false }, { $set: {completed: true}} )
+    var d = new Date();
+    Task.updateMany( { completed: false }, { $set: {completed: true, dateCompleted: d}} )
         .then((result) => {
             req.flash('info', 'All Tasks Completed!');
             res.redirect('/');
