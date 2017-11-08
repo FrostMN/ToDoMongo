@@ -64,6 +64,7 @@ router.post('/done', function (req, res, next) {
     Task.findOneAndUpdate( {_id: _id}, {$set: {completed: true, dateCompleted: d}})
         .then( (updtedTask) => {
             if (updtedTask) {
+                req.flash('info', 'Task Completed.');
                 res.redirect('/');
             } else {
                 res.status(404).send("Error marking task done: not found")
@@ -78,7 +79,8 @@ router.post('/done', function (req, res, next) {
 router.post('/alldone', function (req, res, next) {
     Task.updateMany( { completed: false }, { $set: {completed: true}} )
         .then((result) => {
-                res.redirect('/');
+            req.flash('info', 'All Tasks Completed!');
+            res.redirect('/');
         }).catch((err) => {
             next(err);
         }
@@ -90,6 +92,7 @@ router.post('/delete', function (req, res, next) {
     Task.deleteOne( {_id: _id})
         .then( (result) =>{
             if (result.deletedCount === 1) {
+                req.flash('info', 'Task Deleted');
                 res.redirect('/');
             } else {
                 res.status(404).send("Error deleting task: not found");
