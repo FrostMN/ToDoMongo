@@ -32,13 +32,6 @@ router.post('/login', passport.authenticate('local-login', {
     failureFlash: true
 }));
 
-// /* POST to signup page. */
-// router.post('/signup', passport.authenticate('local-signup', {
-//     successRedirect: '/:user/',
-//     failureRedirect: '/signup',
-//     failureFlash: true
-// }));
-
 /* POST to signup page. */
 router.post('/signup', passport.authenticate('local-signup', {
     successRedirect: '/usr/',
@@ -49,12 +42,23 @@ router.post('/signup', passport.authenticate('local-signup', {
 /* GET secret page*/
 router.get('/usr/', isLoggedIn, function (req, res, next) {
     var user = req.user;
+    var user_name = user.local.username;
+    var user_id = user._id;
+
+    console.log(user_id);
+
     if (user) {
-        res.render('user', {user: user});
+        Task.find( { completed: false, owner: user_id } ) // , owner: user_name
+            .then( (docs) => {
+                res.render('user', {user: user, tasks: docs});
+            }).catch( (err) => {
+                next(err)
+        });
     } else {
         res.redirect('/');
     }
 });
+
 
 /* Middle ware to determine logged in*/
 function isLoggedIn(req, res, next) {
@@ -71,19 +75,28 @@ router.get('/logout', function (req, res, next) {
     res.redirect('/');
 });
 
-// router.get('/:user/', function (req, res, next) {
-//     Task.find( { completed: false, user: user })
-//         .then( (docs) => {
-//             res.render('index', { title: 'Incomplete Tasks', tasks: docs });
-//     }).catch( (err) => {
-//         next(err);
-//     })
-// })
+router.get('/usr/completed', isLoggedIn, function(req, res, next) {
 
+    var user = req.user;
+    var user_name = user.local.username;
+    var user_id = user._id;
+
+    console.log("in completed");
+    console.log(user_name);
+    console.log(user_id);
+
+    Task.find( { completed: true, owner: user_id } )
+        .then( (docs) => {
+            res.render('tasks_completed', { title: 'Completed Tasks', user: user_name, tasks: docs });
+        }).catch( (err) => {
+        next(err);
+    });
+
+});
 
 router.get('/usr/:_id', function(req, res, next) {
     var _id = req.params._id;
-    Task.findOne( {_id: _id} )
+    Task.findOne( { owner: req.user._id, _id: _id} )
         .then( (task) => {
             if (task) {
                 res.render('task', {title: 'Task', task: task})
@@ -98,31 +111,24 @@ router.get('/usr/:_id', function(req, res, next) {
 });
 
 
-router.get('/usr/completed', function(req, res, next) {
-    Task.find( {completed: true} )
-        .then( (docs) => {
-        res.render('tasks_completed', { title: 'Completed Tasks', tasks: docs });
-    }).catch( (err) => {
-        next(err);
-    });
-});
-
 router.post('/add', function (req, res, next) {
     if (!req.body || !req.body.text) {
         // no text info, redirect with flash message
         req.flash('error', 'please enter a task');
-        res.redirect('/'); // TODO be user friendly
+        res.redirect('/usr/'); // TODO be user friendly
     } else {
 
-        var user = req.query.user;
+        var user_id = req.body.user;
 
-        console.log(user);
+        // console.log(user);
 
         console.log("in add");
-        console.log(req.body);
+        // console.log(req.body.user);
+
+        console.log(user_id)
 
         var d = new Date();
-        new Task({ text: req.body.text, owner: user, completed: false, dateCreated: d}).save()
+        new Task({ text: req.body.text, owner: user_id, completed: false, dateCreated: d}).save()
             .then( (newTask) => {
                 console.log('new task created is', newTask);
                 res.redirect('/usr/');
@@ -137,7 +143,7 @@ router.post('/add', function (req, res, next) {
 router.post('/done', function (req, res, next) {
     var _id = req.body._id;
     var d = new Date();
-    Task.findOneAndUpdate( {_id: _id}, {$set: {completed: true, dateCompleted: d}})
+    Task.findOneAndUpdate( { owner: req.user._id, _id: _id}, {$set: {completed: true, dateCompleted: d}})
         .then( (updtedTask) => {
             if (updtedTask) {
                 req.flash('info', 'Task Completed.');
@@ -154,10 +160,10 @@ router.post('/done', function (req, res, next) {
 
 router.post('/alldone', function (req, res, next) {
     var d = new Date();
-    Task.updateMany( { completed: false }, { $set: {completed: true, dateCompleted: d}} )
+    Task.updateMany( { owner: req.user._id, completed: false }, { $set: {completed: true, dateCompleted: d}} )
         .then((result) => {
             req.flash('info', 'All Tasks Completed!');
-            res.redirect('/');
+            res.redirect('/usr/');
         }).catch((err) => {
             next(err);
         }
@@ -166,11 +172,11 @@ router.post('/alldone', function (req, res, next) {
 
 router.post('/delete', function (req, res, next) {
     var _id = req.body._id;
-    Task.deleteOne( {_id: _id})
+    Task.deleteOne( { owner: req.user._id, _id: _id})
         .then( (result) =>{
             if (result.deletedCount === 1) {
                 req.flash('info', 'Task Deleted');
-                res.redirect('/');
+                res.redirect('/usr/');
             } else {
                 res.status(404).send("Error deleting task: not found");
             }
@@ -183,10 +189,10 @@ router.post('/delete', function (req, res, next) {
 
 router.post('/deleteDone', function (req, res, next) {
     var _id = req.body._id;
-    Task.deleteMany( {completed: true})
+    Task.deleteMany( { owner: req.user._id , completed: true})
         .then( (result) =>{
             req.flash('info', 'All Completed Tasks Deleted');
-            res.redirect('/');
+            res.redirect('/usr/');
         })
         .catch((err) => {
                 next(err);

@@ -1,42 +1,109 @@
+:root {
+
+    --main-bg-color: #FDFFFC;
+
+    --card-bg-color: #78A1BB;
+    --card-border-color: #EBF5EE;
+    --card-text-color: #EBF5EE;
+
+
+    --h1-text: #1f1f1f;
+    --body-text: #2f2f2f;
+
+    --shadow-color: rgba(0,0,0,0.2);
+}
+
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    color: var(--body-text);
 }
 
-a {
-  color: #00B7FF;
+h1 {
+    color: var(--h1-text);
 }
 
-.tasklist ul {
-    list-style: none;
+
+
+.main {
+    background-color: var(--main-bg-color);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+
+    padding-left: 50%;
+    padding-right: 50%;
+
 }
 
-.tasklist li form {
-    display: inline-block;
-    /*float: right;*/
+.login-card {
+    background-color: var(--card-bg-color);
+
+    position: absolute;
+    width: 25em;
+    padding: 1em;
+
+    left: 0;
+    right: 0;
+    margin: 3em auto;
+
+    text-align: center;
+
 }
 
-.nav ul {
-    list-style: none;
+.login-card input[type=text], input[type=password] {
+    width: 100%;
+    margin-bottom: 1em;
+    padding: .25em;
+    /*font-size: 10pt;*/
+}
+
+.login-card input[type=submit] {
+    width: 100%;
+    background-color: var(--card-bg-color);
+    color: var(--card-text-color);
+    border: none;
+}
+
+.login-card input[type=submit]:hover {
+    width: 100%;
+    background-color: var(--card-text-color);
+    color: var(--h1-text);
+    cursor: pointer;
+    border: none;
+}
+
+.todo-card {
+    background-color: var(--card-bg-color);
+
+    position: absolute;
+    width: 25em;
+    padding: 1em;
+
+    left: 0;
+    right: 0;
+    margin: 3em auto;
+
+    text-align: center;
+
+}
+
+.done-card {
+    background-color: var(--card-bg-color);
+
+    position: absolute;
+    width: 25em;
+    padding: 1em;
+
+    left: 0;
+    right: 0;
+    margin: 3em auto;
+
+    text-align: center;
+
 }
 
 .nav li {
     display: inline-block;
-    /*float: right;*/
-}
-
-.nav a {
-    text-decoration: none;
-}
-
-.add_form ul {
-    list-style: none;
-}
-
-.add_form li {
-    display: inline-block;
-}
-
-.tasklist a {
-    text-decoration: none;
 }

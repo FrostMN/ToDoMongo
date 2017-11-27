@@ -3,12 +3,12 @@
     <head>
         <title>{{title}}</title>
         <script rel="script" src="/javascripts/main.js"></script>
+        <link rel='stylesheet' href='/stylesheets/reset.css' />
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body>
-        {{{body}}}
-            {{#if user}}
-                {{> nav }}
-            {{/if}}
+        <div class="main">
+            {{{body}}}
+        </div>
     </body>
 </html>

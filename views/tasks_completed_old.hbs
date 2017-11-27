@@ -1,0 +1,11 @@
+{{#if tasks}}
+    <li>
+        <div class="deleteDone">
+            <form id="deleteDone_form" action="/deleteDone" method="POST">
+                <input id="deleteDone_button" name="deleteDone" type="submit" value="Delete All Done">
+            </form>
+        </div>
+    </li>
+{{/if}}
+
+{{this}}
