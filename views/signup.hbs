@@ -1,25 +1,20 @@
-
 <div class="signup-card">
-<h2>Signup for an account</h2>
+    <h2>Signup for an account</h2>
 
-<!-- Login failure messages -->
-<ul>
-    {{#each message}}
-        <li>{{this}}</li>
-    {{/each}}
-</ul>
+    <!-- Login failure messages -->
+    <ul>
+        {{#each message}}
+            <li>{{this}}</li>
+        {{/each}}
+    </ul>
 
-<form method="POST" action="/signup">
-    <input type="text" name="username" placeholder="username" />
-    <input type="password" name="password" placeholder="password" />
-    <input type="submit" value="Sign Up">
-</form>
+    <form method="POST" action="/signup">
+        <input type="text" name="username" placeholder="username" />
+        <input type="password" name="password" placeholder="password" />
+        <input type="submit" value="Sign Up">
+    </form>
 
-<p> If you allready have an account
-    <a href="/Login">Login here</a>
-</p>
-
-<!--<h2>Login in with Twitter</h2>-->
-
-<!--<p>Or you can <a href="/auth/twitter">use your twitter account to sign in</a></p>-->
-<!--</div>-->
+    <form method="GET" action="/">
+        <input type="submit" value="cancel">
+    </form>
+</div>
