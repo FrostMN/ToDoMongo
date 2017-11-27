@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var passport = require('passport');
 var Task = require('../models/task.js');
 
 /* GET home page. */
@@ -13,7 +14,74 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.get('/task/:_id', function(req, res, next) {
+/* GET Login page. */
+router.get('/login', function(req, res, next) {
+    res.render('index');
+});
+
+/* GET signup page. */
+router.get('/signup', function(req, res, next) {
+    res.render('signup');
+});
+
+
+/* POST to login page. */
+router.post('/login', passport.authenticate('local-login', {
+    successRedirect: '/usr/',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
+
+// /* POST to signup page. */
+// router.post('/signup', passport.authenticate('local-signup', {
+//     successRedirect: '/:user/',
+//     failureRedirect: '/signup',
+//     failureFlash: true
+// }));
+
+/* POST to signup page. */
+router.post('/signup', passport.authenticate('local-signup', {
+    successRedirect: '/usr/',
+    failureRedirect: '/signup',
+    failureFlash: true
+}));
+
+/* GET secret page*/
+router.get('/usr/', isLoggedIn, function (req, res, next) {
+    var user = req.user;
+    if (user) {
+        res.render('user', {user: user});
+    } else {
+        res.redirect('/');
+    }
+});
+
+/* Middle ware to determine logged in*/
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect('/')
+    }
+}
+
+// route to logout
+router.get('/logout', function (req, res, next) {
+    req.logout();
+    res.redirect('/');
+});
+
+// router.get('/:user/', function (req, res, next) {
+//     Task.find( { completed: false, user: user })
+//         .then( (docs) => {
+//             res.render('index', { title: 'Incomplete Tasks', tasks: docs });
+//     }).catch( (err) => {
+//         next(err);
+//     })
+// })
+
+
+router.get('/usr/:_id', function(req, res, next) {
     var _id = req.params._id;
     Task.findOne( {_id: _id} )
         .then( (task) => {
@@ -30,7 +98,7 @@ router.get('/task/:_id', function(req, res, next) {
 });
 
 
-router.get('/completed', function(req, res, next) {
+router.get('/usr/completed', function(req, res, next) {
     Task.find( {completed: true} )
         .then( (docs) => {
         res.render('tasks_completed', { title: 'Completed Tasks', tasks: docs });
@@ -45,11 +113,19 @@ router.post('/add', function (req, res, next) {
         req.flash('error', 'please enter a task');
         res.redirect('/'); // TODO be user friendly
     } else {
+
+        var user = req.query.user;
+
+        console.log(user);
+
+        console.log("in add");
+        console.log(req.body);
+
         var d = new Date();
-        new Task({ text: req.body.text, completed: false, dateCreated: d}).save()
+        new Task({ text: req.body.text, owner: user, completed: false, dateCreated: d}).save()
             .then( (newTask) => {
                 console.log('new task created is', newTask);
-                res.redirect('/');
+                res.redirect('/usr/');
             })
             .catch( (err) => {
                 next(err);
@@ -65,7 +141,7 @@ router.post('/done', function (req, res, next) {
         .then( (updtedTask) => {
             if (updtedTask) {
                 req.flash('info', 'Task Completed.');
-                res.redirect('/');
+                res.redirect('/usr');
             } else {
                 res.status(404).send("Error marking task done: not found")
             }

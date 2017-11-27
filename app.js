@@ -4,10 +4,13 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var hbs = require('hbs');
 var flash = require('express-flash');
 var session = require('express-session');
+var passport = require('passport');
+var passportConfig = require('./config/passport')(passport);
 var mongoose = require('mongoose');
-var hbs = require('hbs');
+var MongoDBStore = require('connect-mongodb-session')(session);
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -16,6 +19,11 @@ var index = require('./routes/index');
 var app = express();
 
 var db_url = process.env.MONGO_URL;
+db_url = db_url.replace('{user}', process.env.MONGO_TODO_USER);
+db_url = db_url.replace('{pword}', process.env.MONGO_TODO_PASSWORD);
+db_url = db_url.replace('{db}', process.env.MONGO_TODO_DB_NAME);
+
+console.log(db_url);
 
 mongoose.connect(db_url, {useMongoClient: true})
     .then( () => {console.log("Connected to MongoDB")})
@@ -36,7 +44,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session({secret: 'top secret', resave: false, saveUninitialized: false}));
+app.use(session({secret: 'top secret', resave: false, saveUninitialized: true}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(flash());
 
 
